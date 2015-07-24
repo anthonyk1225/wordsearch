@@ -1,0 +1,34 @@
+#gameForm, #game{
+	width: 20em;
+	margin: auto;
+	margin-top: 1em;
+	font-family: calibri;
+	text-align: center;
+}
+
+#game{
+	margin-top: 0;
+}
+
+#gameGrid{
+	font-size: 1em;
+}
+
+#gameGrid p {
+	margin: 0 0em 0 1em;
+  	font-family: monospace;
+}
+
+#players, #gameGrid {
+	display: inline-block;
+	vertical-align: top;
+	font-size: 1em;
+}
+
+#newGame{
+	text-align: center;
+}
+
+.gridLetters{
+	font-size: 2em;
+}
