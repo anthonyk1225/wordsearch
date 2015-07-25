@@ -8,18 +8,10 @@ function randomNumber(){
 };
 
 $(document).ready(function(){
-	var board = []
-	var newGame = new Board;
-	var gameBoard = newGame.createBoard();
-	for (i=0; i<15; i++){
-		board.push(gameBoard[i]['letters'][0])
-		$('#gameGrid').append('<p class=gridLetters>'+gameBoard[i]['letters']+'</p>');
-	};
 	$('#newGame').on('submit', function(event){
 		event.preventDefault();
 		window.location.href = '/newgame/'+randomNumber();
 	});
-	newGame.parseThrough(board)
 });
 
 

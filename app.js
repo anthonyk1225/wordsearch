@@ -15,14 +15,6 @@ var lineReader = require('line-reader');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-app.get('/', function(req, res) {
-	res.render('index');
-});
-
-app.get(/\/newgame\/[0-9]+/, function(req, res) {
-	res.render('game');
-});
-
 // function seedDb(){
 // 	var counter = 0
 // 	lineReader.eachLine('dictionary.txt', function(line) {
@@ -42,11 +34,11 @@ Board.prototype.createBoard = function(){
 	var letters = ['A','B','C','D','E','F','G','H','I','J','K',
 				'L','M','N','O','P','Q','R','S','T','U','V','W','X',
 				'Y','Z'];
-	for (i=0; i<255; i++){
+	for (var i=0; i<255; i++){
 		var rand = Math.floor(Math.random() * letters.length);
 		grid.push(letters[rand]);
 	};
-	for (i=1; i<16; i++){
+	for (var i=1; i<16; i++){
 		var entry = grid.slice(i*15,(i*15)+15);
 		var entry = entry.join('');
 		final_grid.push(entry);
@@ -55,21 +47,67 @@ Board.prototype.createBoard = function(){
 };
 
 Board.prototype.parseThrough = function() {
+	foundWords = []
 	var yo = this;
 	users.find({}, function (err, docs){
 		if (err){
 			return 'error';
 		}
 		else{
-			for (i = 0; i < docs.length; i++){
-				yo.findWords(docs[i].word);
+			for (var i = 0; i < docs.length; i++){
+				if (docs[i].word.length > 2){
+					a = yo.findWords(docs[i].word) ;
+					if (a != undefined){
+						foundWords.push(a)
+					}
+				}	
 			}
 		};
 	});
 };
 
 Board.prototype.findWords = function(word) {
-	null
+	var yo = this;
+	for (var i = 0; i < yo.board.length; i ++) {
+		for (var j = 0; j < yo.board[i].length; j++) {
+			if (yo.board[i][j] == word[0]) {
+				if (j + word.length <= 15){
+					if (yo.board[i].slice(j, (j + word.length)) == word.toUpperCase()) {
+						return word
+					};
+				};
+				if (i + word.length <= 15) {
+					hit = ''
+					for (var k = i; k < i + word.length; k ++) {
+						hit += this.board[k][j];
+					};
+					if (hit == word.toUpperCase()){
+						return word
+					};
+				};
+				if (i + word.length <= 15 && j + word.length <= 15){
+					hit = ''
+					for (var z = 0; z < word.length; z ++) {
+						hit += this.board[i + z][j + z];
+					};
+					if (hit == word.toUpperCase()){
+						return word
+					};
+				};
+			};
+		};
+	};
 };
 
-yo = new Board;
+app.get('/', function(req, res) {
+	res.render('index');
+});
+
+app.get(/\/newgame\/[0-9]+/, function(req, res) {
+	var yo = new Board
+	res.render('game', {board: yo.board});
+});
+
+yo = new Board
+yo.parseThrough()
+console.log(yo.board)

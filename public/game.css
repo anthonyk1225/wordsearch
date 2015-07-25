@@ -22,7 +22,7 @@
 #players, #gameGrid {
 	display: inline-block;
 	vertical-align: top;
-	font-size: 1em;
+	font-size: 2em;
 }
 
 #newGame{

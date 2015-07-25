@@ -7,12 +7,16 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
         <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
         <link rel="stylesheet" type='text/css' href="/game.css">
-        <script type="text/javascript" src="/socket.js"></script>
         <script type="text/javascript" src="/base.js"></script>        
     </head>
     <body>	
 	    <div id='container'>
 			<div id='gameGrid'>
+                <% if (board) { %>
+                <% for (var i=0; i<board.length; i++){%>
+                    <p><%= board[i] %></p>
+                    <% } %>
+                <% } %>
 			</div>
 
 			<div id='players'>
