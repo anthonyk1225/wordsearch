@@ -23,34 +23,53 @@ app.get(/\/newgame\/[0-9]+/, function(req, res) {
 	res.render('game');
 });
 
-function findWords(){
-	var combinations = [];
-	users.find({}, function(err, docs){
-		if (err){ console.log("error") }
-		for (index in docs){
-			if (docs[index].word.length > 3){
-				combinations.push({'word': docs[index].word});
-				if (combinations.length == 1000){
-					return combinations
-				};
-			};
+// function seedDb(){
+// 	var counter = 0
+// 	lineReader.eachLine('dictionary.txt', function(line) {
+// 		users.insert({ "word": line });
+// 		console.log('Word ' + counter + ' added!');
+// 		counter += 1;
+// 	});
+// };
+
+function Board() {
+	this.board = this.createBoard();
+};
+
+Board.prototype.createBoard = function(){
+	var grid = [];
+	var final_grid = [];
+	var letters = ['A','B','C','D','E','F','G','H','I','J','K',
+				'L','M','N','O','P','Q','R','S','T','U','V','W','X',
+				'Y','Z'];
+	for (i=0; i<255; i++){
+		var rand = Math.floor(Math.random() * letters.length);
+		grid.push(letters[rand]);
+	};
+	for (i=1; i<16; i++){
+		var entry = grid.slice(i*15,(i*15)+15);
+		var entry = entry.join('');
+		final_grid.push(entry);
+	};
+	return final_grid;
+};
+
+Board.prototype.parseThrough = function() {
+	var yo = this;
+	users.find({}, function (err, docs){
+		if (err){
+			return 'error';
+		}
+		else{
+			for (i = 0; i < docs.length; i++){
+				yo.findWords(docs[i].word);
+			}
 		};
 	});
 };
 
-function seedDb(){
-	var counter = 0
-	lineReader.eachLine('dictionary.txt', function(line) {
-		users.insert({ "word": line });
-		console.log('Word ' + counter + ' added!');
-		counter += 1;
-	});
+Board.prototype.findWords = function(word) {
+	null
 };
 
-// io.sockets.on('connection', function(socket){
-// 	socket.on('send message', function(data){
-// 		io.sockets.emit('new message', data);
-// 	});
-// });
-
-// seedDb()
+yo = new Board;
