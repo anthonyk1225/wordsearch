@@ -5,12 +5,11 @@ var server = app.listen(3000, function () {
 	var port = server.address().port;
 	console.log('Example app listening at http://%s:%s', host, port);
 });
-
+ 
 var db = require('monk')('localhost/test');
 var users = db.get('words');
 module.exports = db;
 var lineReader = require('line-reader');
-// var io = require('socket.io').listen(server);
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -25,7 +24,7 @@ app.use(express.static('public'));
 // };
 
 function Board() {
-	this.board = this.createBoard();
+	this.board = this.createBoard();	
 };
 
 Board.prototype.createBoard = function(){
@@ -46,9 +45,9 @@ Board.prototype.createBoard = function(){
 	return final_grid;
 };
 
-Board.prototype.parseThrough = function() {
-	foundWords = []
+Board.prototype.parseThrough = function( callback ) {
 	var yo = this;
+	var combos = []
 	users.find({}, function (err, docs){
 		if (err){
 			return 'error';
@@ -58,10 +57,11 @@ Board.prototype.parseThrough = function() {
 				if (docs[i].word.length > 2){
 					a = yo.findWords(docs[i].word) ;
 					if (a != undefined){
-						foundWords.push(a)
+						combos.push(a.toLowerCase())
 					}
 				}	
 			}
+			callback (combos)
 		};
 	});
 };
@@ -103,11 +103,9 @@ app.get('/', function(req, res) {
 	res.render('index');
 });
 
-app.get(/\/newgame\/[0-9]+/, function(req, res) {
+app.get(/\/newgame\/[0-9]+\/[2-5]{1}/, function(req, res) {
 	var yo = new Board
-	res.render('game', {board: yo.board});
+	yo.parseThrough(function(combos){
+	res.render('game', {board: yo.board, 'combos': combos});
+	});	
 });
-
-yo = new Board
-yo.parseThrough()
-console.log(yo.board)

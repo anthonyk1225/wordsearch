@@ -10,7 +10,8 @@ function randomNumber(){
 $(document).ready(function(){
 	$('#newGame').on('submit', function(event){
 		event.preventDefault();
-		window.location.href = '/newgame/'+randomNumber();
+		var players = $('#players').val();
+		window.location.href = '/newgame/'+ randomNumber() + '/' + players;
 	});
 });
 

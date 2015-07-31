@@ -1,4 +1,4 @@
-#gameForm, #game{
+#gameForm{
 	width: 20em;
 	margin: auto;
 	margin-top: 1em;
@@ -6,20 +6,13 @@
 	text-align: center;
 }
 
-#game{
-	margin-top: 0;
-}
-
-#gameGrid{
-	font-size: 1em;
-}
-
 #gameGrid p {
+	size:  1em;
 	margin: 0 0em 0 1em;
   	font-family: monospace;
 }
 
-#players, #gameGrid {
+#gameArea, #gameGrid {
 	display: inline-block;
 	vertical-align: top;
 	font-size: 2em;
@@ -29,6 +22,15 @@
 	text-align: center;
 }
 
+#gameArea{
+	margin-left: 10em;
+	height:;
+}
+
 .gridLetters{
 	font-size: 2em;
+}
+
+#combos{
+	margin-left: 1em;
 }
