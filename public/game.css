@@ -34,3 +34,9 @@
 #combos{
 	margin-left: 1em;
 }
+
+#scores{
+	position: absolute;
+	left: 40em;
+	top: 25em;
+}

@@ -16,17 +16,37 @@ Players.prototype.addScore = function( player ) {
 	this.playerScores[player] += 1;
 };
 
+Players.prototype.gameOver = function( answers ) {
+	if (answers.length == 0){
+		return true
+	};
+	return false
+};
+
+Players.prototype.winner = function ( players ){
+	var winnerScore = { 'player' : 0 } // a object with the top player's score
+	var winner = '' // the player who is high score
+	for (i = 1; i <= players; i++){ //for index in list of all the players
+		console.log(i)
+		if (this.playerScores[i] > winnerScore.player){ 
+			winnerScore.player = this.playerScores[i];
+			winner = i
+		};
+	};
+	return winner	
+};
+
 $(document).ready(function(){
 	yo = new Players; // instantiate a new instance of Players
 	var pathname = window.location.pathname; //pathname that holds # of players
 	var players = pathname[parseInt(pathname.length - 1)]; // number of players
-	for (i=0; i<=players; i++){ //append a score of 0 but add each player to the object
-		yo.playerScores[i] = i;
+	for (i=1; i<=players; i++){ //append a score of 0 but add each player to the object
+		yo.playerScores[i] = 0;
 	};
-	var answers = $('#combos p').html(); //create a variable of all the words in the grid
+	var answers = $('#combos p').html().split(','); //create a variable of all the words in the grid
 	$('#gameArea p').html('Player ' + yo.currentPlayer + ' go!');	
-
 	$('#guess').on('submit', function(e){
+		console.log(yo.playerScores)
 		e.preventDefault();
 		var word = $("[name='word']").val(); //what the player entered to try
 		var match = answers.indexOf(word.toLowerCase()); // will return -1 if not found else returns the index
@@ -34,12 +54,21 @@ $(document).ready(function(){
 			yo.playerScores[this.currentPlayer] += 1;
 			$('#status').html('Correct!');
 			yo.addScore( yo.currentPlayer)
+			answers.splice(match, 1)
+			if (yo.gameOver(answers) === true){
+				var winner = yo.winner( players )
+				$('#scores p').append('Player ' + winner + ' wins!');
+				$('[type=submit]').attr('disabled', 'disabled')
+			}
 		}
 		else {
 			$('#status').html('Wrong!');
 		};
+		$('[name=word]').val('');
+		console.log($('#gameArea p').html());
 		yo.nextPlayer(players);
-		$('#gameArea p').html('Player ' + yo.currentPlayer);
+		$('#gameArea p').html('Player ' + yo.currentPlayer + ' go!');
+		// $('#scores p').append(yo.playerScores[1]);
 	});
 });
 
