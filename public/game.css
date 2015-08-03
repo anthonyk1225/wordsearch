@@ -38,5 +38,30 @@
 #scores{
 	position: absolute;
 	left: 40em;
-	top: 25em;
+	top: 15em;
+}
+
+#messages, #chat {
+	position: absolute;
+	left : 40em;
+	top: 30em;
+}
+
+#messages { 
+	top: 20em;
+  	list-style-type: none; 
+  	margin: 0; 
+  	padding: 0; 
+  	overflow: hidden;
+  	overflow-y: auto;
+  	height: 10em;
+  	width: 30em;
+}
+
+#messages li { 
+  padding: 5px 10px; 
+}
+
+#messages li:nth-child(odd) { 
+  background: #eee; 
 }

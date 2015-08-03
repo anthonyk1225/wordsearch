@@ -1,9 +1,10 @@
 var express = require("express");
-var app = express();
-var server = app.listen(3000, function () {
-	var host = server.address().address;
-	var port = server.address().port;
-	console.log('Example app listening at http://%s:%s', host, port);
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+http.listen(3000, function(){
+  console.log('listening on *:3000');
 });
  
 var db = require('monk')('localhost/test');
@@ -22,6 +23,19 @@ app.use(express.static('public'));
 // 		counter += 1;
 // 	});
 // };
+
+io.on('connection', function(socket){
+	console.log('a user connected');
+  	socket.on('chat message', function(msg){
+    	io.emit('chat message', msg);
+  });
+  	socket.on('wrongAnswer', function(msg){
+  		io.emit('wrongAnswer', msg);
+  });
+  	socket.on('correctAnswer', function(msg){
+  		io.emit('correctAnswer', msg);
+  });
+});
 
 function Board() {
 	this.board = this.createBoard();	
@@ -109,3 +123,4 @@ app.get(/\/newgame\/[0-9]+\/[2-5]{1}/, function(req, res) {
 	res.render('game', {board: yo.board, 'combos': combos});
 	});	
 });
+
