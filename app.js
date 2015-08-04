@@ -9,21 +9,19 @@ http.listen(3000, function(){
  
 var db = require('monk')('localhost/test');
 var users = db.get('words');
+var game = require('monk')('localhost/games');
+var currentgames = game.get('currentgames');
+var board = require('monk')('localhost/boards')
+var table = board.get('tables');
+
 module.exports = db;
 var lineReader = require('line-reader');
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-// function seedDb(){
-// 	var counter = 0
-// 	lineReader.eachLine('dictionary.txt', function(line) {
-// 		users.insert({ "word": line });
-// 		console.log('Word ' + counter + ' added!');
-// 		counter += 1;
-// 	});
-// };
 
+///// Socket commands ////
 io.on('connection', function(socket){
 	console.log('a user connected');
   	socket.on('chat message', function(msg){
@@ -40,6 +38,18 @@ io.on('connection', function(socket){
   });  	
 });
 
+/////// Use this to seed Db //////
+// function seedDb(){
+// 	var counter = 0
+// 	lineReader.eachLine('dictionary.txt', function(line) {
+// 		users.insert({ "word": line });
+// 		console.log('Word ' + counter + ' added!');
+// 		counter += 1;
+// 	});
+// };
+
+
+// Board class & cooresponding prototypes //////
 function Board() {
 	this.board = this.createBoard();	
 };
@@ -116,14 +126,37 @@ Board.prototype.findWords = function(word) {
 	};
 };
 
+////////////Paths/////////////////
 app.get('/', function(req, res) {
 	res.render('index');
 });
 
-app.get(/\/newgame\/[0-9]+\/[2-5]{1}/, function(req, res) {
-	var yo = new Board
-	yo.parseThrough(function(combos){
-	res.render('game', {board: yo.board, 'combos': combos});
-	});	
-});
-
+app.get(/\/newgame\/([0-9]+)\/([2-5]{1})/, function(req, res) {
+	var gameid = (req.params['0'] + req.params['1'])
+	currentgames.find({'gameid' : gameid}, function (err, doc){
+		if (err){
+			return 'error';
+		}
+		else {
+			var result = doc
+			if (result.length == 0){
+				currentgames.insert({'gameid' : gameid})
+				var yo = new Board
+				yo.parseThrough(function(combos){
+					table.insert({encasing : {'gameid' : gameid, 'board' : yo.board, 'combos': combos}})
+					res.render('game', {board: yo.board, 'combos': combos});
+				});
+			}
+			else {
+				table.find({'encasing.gameid' : gameid}, function (err, documents){
+					if (err){
+						return 'error';
+					}
+					else {
+						res.render('game', {'board': documents[0].encasing.board, 'combos': documents[0].encasing.combos})
+					}
+				});
+			};
+		};
+	});
+}); 
