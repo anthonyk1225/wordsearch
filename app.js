@@ -35,6 +35,9 @@ io.on('connection', function(socket){
   	socket.on('correctAnswer', function(msg){
   		io.emit('correctAnswer', msg);
   });
+  	socket.on('nextPlayer', function(msg){
+  		io.emit('nextPlayer', msg);
+  });  	
 });
 
 function Board() {

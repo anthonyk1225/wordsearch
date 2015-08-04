@@ -81,9 +81,13 @@ $(document).ready(function(){
 
 		$('[name=word]').val('');
 		yo.nextPlayer(players);
-		$('#gameArea p').html('Player ' + yo.currentPlayer + ' go!');
+		socket.emit('nextPlayer', 'Player ' + yo.currentPlayer + ' go!');
 		// $('#scores p').append(yo.playerScores[1]);
 	});
+
+	socket.on('nextPlayer', function(msg) {
+		$('#gameArea p').html(msg);
+	})
 
 	socket.on('wrongAnswer', function(msg){
 		$('#status').html(msg);
