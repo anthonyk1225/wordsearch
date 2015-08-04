@@ -2,6 +2,7 @@ var express = require("express");
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+require('./sockets')(io);
 
 http.listen(3000, function(){
   console.log('listening on *:3000');
@@ -20,24 +21,6 @@ var lineReader = require('line-reader');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-
-///// Socket commands ////
-io.on('connection', function(socket){
-	console.log('a user connected');
-  	socket.on('chat message', function(msg){
-    	io.emit('chat message', msg);
-  });
-  	socket.on('wrongAnswer', function(msg){
-  		io.emit('wrongAnswer', msg);
-  });
-  	socket.on('correctAnswer', function(msg){
-  		io.emit('correctAnswer', msg);
-  });
-  	socket.on('nextPlayer', function(msg){
-  		io.emit('nextPlayer', msg);
-  });  	
-});
-
 /////// Use this to seed Db //////
 // function seedDb(){
 // 	var counter = 0
@@ -47,7 +30,6 @@ io.on('connection', function(socket){
 // 		counter += 1;
 // 	});
 // };
-
 
 // Board class & cooresponding prototypes //////
 function Board() {

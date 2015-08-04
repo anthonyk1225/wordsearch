@@ -37,7 +37,7 @@ Players.prototype.winner = function ( players ){
 
 $(document).ready(function(){
 	var username = prompt('What is your name?');
-    var socket = io();
+    var socket = io.connect();
 
 	yo = new Players; // instantiate a new instance of Players
 	var pathname = window.location.pathname; //pathname that holds # of players
@@ -56,6 +56,7 @@ $(document).ready(function(){
     });
 
     socket.on('chat message', function(msg){
+    	console.log(msg)
         $('#messages').append($('<li>').text(msg));
         $('#messages').scrollTop(99999999999999999999999999999);
     });
@@ -84,11 +85,9 @@ $(document).ready(function(){
 		socket.emit('nextPlayer', 'Player ' + yo.currentPlayer + ' go!');
 		// $('#scores p').append(yo.playerScores[1]);
 	});
-
 	socket.on('nextPlayer', function(msg) {
 		$('#gameArea p').html(msg);
-	})
-
+	});
 	socket.on('wrongAnswer', function(msg){
 		$('#status').html(msg);
 	});
