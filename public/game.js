@@ -1,53 +1,48 @@
 function Players(){
-	this.currentPlayer = 1;
-	this.playerScores = {};
-};
-
-Players.prototype.nextPlayer = function( totalPlayers ) {
-	if (this.currentPlayer != totalPlayers) {
-		this.currentPlayer += 1;
-	}
-	else {
-		this.currentPlayer = 1;
-	};
-};
-
-Players.prototype.addScore = function( player ) {
-	this.playerScores[player] += 1;
-};
-
-Players.prototype.gameOver = function( answers ) {
-	if (answers.length == 0){
-		return true
-	};
-	return false
-};
-
-Players.prototype.winner = function ( players ){
-	var winnerScore = { 'player' : 0 } // a object with the top player's score
-	var winner = '' // the player who is high score
-	for (i = 1; i <= players; i++){ //for index in list of all the players
-		if (this.playerScores[i] > winnerScore.player){ 
-			winnerScore.player = this.playerScores[i];
-			winner = i
-		};
-	};
-	return winner	
+	this.currentPlayer = null; // holds current player to check if its their turn
+	this.playerScores = null; // holds all the scores for each player
+	this.player = null; // will hold the number the player is
 };
 
 $(document).ready(function(){
 	var username = prompt('What is your name?');
     var socket = io.connect();
 
-	yo = new Players; // instantiate a new instance of Players
 	var pathname = window.location.pathname; //pathname that holds # of players
 	var players = pathname[parseInt(pathname.length - 1)]; // number of players
-	for (i=1; i<=players; i++){ //append a score of 0 but add each player to the object
-		yo.playerScores[i] = 0;
-	};
-	var answers = $('#combos p').html().split(','); //create a variable of all the words in the grid
-	$('#gameArea p').html('Player ' + yo.currentPlayer + ' go!');	
 
+	var answers = $('#combos p').html().split(','); //create a variable of all the words in the grid
+
+	var gameid = window.location.pathname.replace('/newgame/', '');
+	var gameid = gameid.replace('/', '');
+
+	yo = new Players
+
+	$.getJSON("/playerassignment/", {'gameid' : gameid, 'username' : username, 'players' : players}, function(data) {
+		var keys = Object.keys(data);
+		if (keys[0] == 'full') {
+			alert(data.full);
+		}
+		else {
+			yo.player = data.yourNumber;	
+		};
+		$('body').trigger('nextStep');
+	});
+
+	$("body").on('nextStep', function(){
+		$.getJSON("/currentplayer/", {'gameid' : gameid }, function(data){
+			yo.currentPlayer = data;
+			$('body').trigger('currentplayer');	
+			if (username != yo.currentPlayer.username){
+				$('[type=submit]').attr('disabled', 'disabled');
+			}
+		});
+	});
+
+	$("body").on('currentplayer', function(){
+		console.log(yo.currentPlayer)
+		$('#gameArea p').html(yo.currentPlayer.username + "'s turn!");
+	});
 
     $('#chat').on('submit', function(){
         socket.emit('chat message', username + ': ' + $('#m').val());
@@ -56,7 +51,6 @@ $(document).ready(function(){
     });
 
     socket.on('chat message', function(msg){
-    	console.log(msg)
         $('#messages').append($('<li>').text(msg));
         $('#messages').scrollTop(99999999999999999999999999999);
     });
@@ -72,7 +66,7 @@ $(document).ready(function(){
 			answers.splice(match, 1);
 			if (yo.gameOver(answers) === true){
 				var winner = yo.winner( players );
-				$('#scores p').append('Player ' + winner + ' wins!');
+				$('#scores p').append(winner + ' wins!');
 				$('[type=submit]').attr('disabled', 'disabled')
 			}
 		}
@@ -82,9 +76,10 @@ $(document).ready(function(){
 
 		$('[name=word]').val('');
 		yo.nextPlayer(players);
-		socket.emit('nextPlayer', 'Player ' + yo.currentPlayer + ' go!');
+		socket.emit('nextPlayer', yo.currentPlayer.username + "'s turn!");
 		// $('#scores p').append(yo.playerScores[1]);
 	});
+
 	socket.on('nextPlayer', function(msg) {
 		$('#gameArea p').html(msg);
 	});
