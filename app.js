@@ -116,12 +116,12 @@ function Players(){
 	this.playerScores = {};
 };
 
-Players.prototype.nextPlayer = function( totalPlayers ) {
-	if (this.currentPlayer != totalPlayers) {
-		this.currentPlayer += 1;
+Players.prototype.nextPlayer = function( player, totalPlayers ) {
+	if (player + 1 != totalPlayers ) {
+		return player + 1;
 	}
 	else {
-		this.currentPlayer = 1;
+		return 0;
 	};
 };
 
@@ -129,12 +129,6 @@ Players.prototype.addScore = function( player ) {
 	this.playerScores[player] += 1;
 };
 
-Players.prototype.gameOver = function( answers ) {
-	if (answers.length == 0){
-		return true
-	};
-	return false
-};
 
 Players.prototype.winner = function ( players ){
 	var winnerScore = { 'player' : 0 } // a object with the top player's score
@@ -148,6 +142,12 @@ Players.prototype.winner = function ( players ){
 	return winner	
 };
 
+Players.prototype.gameOver = function( answers ) {
+	if (answers.length == 0){
+		return true
+	};
+	return false
+};
 
 ////////////Paths/////////////////
 app.get('/', function(req, res) {
@@ -168,7 +168,7 @@ app.get(/\/newgame\/([0-9]+)\/([2-5]{1})/, function(req, res) {
 				yo.parseThrough(function(combos){
 					table.insert({encasing : {'gameid' : gameid, 'board' : yo.board, 'combos': combos}})
 					gamestate.insert({ 'gamestate' : {  'gameid': gameid, 'current_player' : {},
-					 'scores' : {} ,'guessed_ansers' : [], 'players' : {} }})
+					 'scores' : {} ,'guessed_answers' : [], 'players' : {} }})
 					res.render('game', {board: yo.board, 'combos': combos});
 				});
 			}
@@ -186,10 +186,11 @@ app.get(/\/newgame\/([0-9]+)\/([2-5]{1})/, function(req, res) {
 	});
 }); 
 
-app.get('/playerassignment/', function(req, res) { // takes a player and enters them into the game
+app.get('/playerassignment', function(req, res) { // takes a player and enters them into the game
 	var gameid = req.query.gameid;
 	var username = req.query.username;
 	var playerMax = req.query.players;
+	var keepWorking = true
 	gamestate.find({'gamestate.gameid' : gameid}, function (err, docs) {
 		if (err){
 			return 'error';
@@ -198,23 +199,33 @@ app.get('/playerassignment/', function(req, res) { // takes a player and enters 
 			var players = docs[0].gamestate.players;
 			var keys = Object.keys(players).sort();
 			var nextEntry = keys.length;
-			if (nextEntry == playerMax){
-				res.json({'full': 'Sorry, this game is full!'})
-			}
-			else {
-				players[nextEntry] = username;
-				gamestate.findAndModify({"gamestate.gameid" : gameid},{$set:{"gamestate.players" : players}});
-				if ( nextEntry == 0) {
-					gamestate.findAndModify({"gamestate.gameid" : gameid},
-						{$set:{"gamestate.current_player" : {'username': username, 'number' : nextEntry}}});	
+			if (keys.length > 0){
+				for (i = 0; i < keys.length; i++){
+					if (players[i] == username){
+						keepWorking = false
+						res.json({'yourNumber' : nextEntry});
+					};
 				};
-				res.json({'yourNumber' : nextEntry});
+			};
+			if (keepWorking == true){
+				if (nextEntry == playerMax){
+					res.json({'full': 'Sorry, this game is full!'})
+				}
+				else  {
+					players[nextEntry] = username;
+					gamestate.findAndModify({"gamestate.gameid" : gameid},{$set:{"gamestate.players" : players}});
+					if ( nextEntry == 0) {
+						gamestate.findAndModify({"gamestate.gameid" : gameid},
+							{$set:{"gamestate.current_player" : {'username': username, 'number' : nextEntry}}});	
+					};
+					res.json({'yourNumber' : nextEntry});
+				};
 			};
 		};
 	});
 });
 
-app.get('/currentplayer/', function(req, res) {
+app.get('/findcurrentplayer/', function(req, res) {
 	var gameid = req.query.gameid;
 	gamestate.find({'gamestate.gameid' : gameid}, function (err, docs) {
 		if (err) {
@@ -226,9 +237,56 @@ app.get('/currentplayer/', function(req, res) {
 	});
 });
 
+app.get('/changecurrentplayer/', function(req, res) {
+	var gameid = req.query.gameid;
+	var players = req.query.players;
+	gamestate.find({'gamestate.gameid' : gameid}, function (err, docs) {
+		if (err) {
+			return 'error';
+		}
+		else {
+			yo = new Players
+			var oldPlayerNumber = docs[0].gamestate.current_player;
+			var nextPlayer = yo.nextPlayer(oldPlayerNumber.number, players); //is a integer
+			var name = docs[0].gamestate.players[nextPlayer];
+			gamestate.findAndModify({"gamestate.gameid" : gameid},
+				{$set:{"gamestate.current_player" : {'username': name, 'number' : nextPlayer}}});
+			res.json({'username' : name})
+		};
+	});
+});
 
-
-
-
+app.get('/scores/', function(req, res) {
+	var gameid = req.query.gameid;
+	var add = req.query.add;
+	var player = req.query.player;
+	var added = false;
+	var word = req.query.word;
+	var currentplayer = 
+	gamestate.find({'gamestate.gameid' : gameid}, function (err, docs) {
+		if (err) {
+			return 'error';
+		}
+		else {
+			var scores = docs[0].gamestate.scores;
+			var keys = Object.keys(scores);
+			var guesses = docs[0].gamestate.guessed_answers
+			if (keys.length > 0) {
+				for (i = 0; i < keys.length; i++){
+					if (keys[i] == player) {
+						added = true;
+						scores[i] = parseInt(scores[i]) + parseInt(add);
+					}
+				}
+			};
+			if (added == false) {
+				scores[player] = add
+			};
+			guesses.push(word);
+			gamestate.findAndModify({"gamestate.gameid" : gameid},{$set:{"gamestate.guessed_answers" : guesses}});			
+			gamestate.findAndModify({"gamestate.gameid" : gameid},{$set:{"gamestate.scores" : scores}});
+		};
+	});
+});
 
 

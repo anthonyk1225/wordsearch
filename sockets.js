@@ -16,5 +16,8 @@ module.exports = function(io) {
     socket.on('nextPlayer', function(msg){
     		io.to(a).emit('nextPlayer', msg);
     });  	
+    socket.on('checkStatus', function(msg) {
+      io.to(a).emit('checkStatus', msg);
+    })
   });
 };
