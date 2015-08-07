@@ -114,6 +114,7 @@ Board.prototype.findWords = function(word) {
 function Players(){
 	this.currentPlayer = 1;
 	this.playerScores = {};
+	this.combos = null
 };
 
 Players.prototype.nextPlayer = function( player, totalPlayers ) {
@@ -125,28 +126,16 @@ Players.prototype.nextPlayer = function( player, totalPlayers ) {
 	};
 };
 
-Players.prototype.addScore = function( player ) {
-	this.playerScores[player] += 1;
-};
-
-
-Players.prototype.winner = function ( players ){
-	var winnerScore = { 'player' : 0 } // a object with the top player's score
-	var winner = '' // the player who is high score
-	for (i = 1; i <= players; i++){ //for index in list of all the players
-		if (this.playerScores[i] > winnerScore.player){ 
-			winnerScore.player = this.playerScores[i];
-			winner = i
+Players.prototype.winner = function ( scores, players ){
+	var winnerScore = { 'player' : 0} // a object with the top player's score
+	var score = 0
+	for (i = 0; i < players; i++){ //for index in list of all the players
+		if (scores[i] > score){ 
+			winnerScore.player = i;
+			score = scores[i]
 		};
 	};
-	return winner	
-};
-
-Players.prototype.gameOver = function( answers ) {
-	if (answers.length == 0){
-		return true
-	};
-	return false
+	return winnerScore.player
 };
 
 ////////////Paths/////////////////
@@ -169,7 +158,7 @@ app.get(/\/newgame\/([0-9]+)\/([2-5]{1})/, function(req, res) {
 					table.insert({encasing : {'gameid' : gameid, 'board' : yo.board, 'combos': combos}})
 					gamestate.insert({ 'gamestate' : {  'gameid': gameid, 'current_player' : {},
 					 'scores' : {} ,'guessed_answers' : [], 'players' : {} }})
-					res.render('game', {board: yo.board, 'combos': combos});
+					res.render('game', {board: yo.board, 'combos' : combos});
 				});
 			}
 			else {
@@ -245,7 +234,7 @@ app.get('/changecurrentplayer/', function(req, res) {
 			return 'error';
 		}
 		else {
-			yo = new Players
+			yo = new Players;
 			var oldPlayerNumber = docs[0].gamestate.current_player;
 			var nextPlayer = yo.nextPlayer(oldPlayerNumber.number, players); //is a integer
 			var name = docs[0].gamestate.players[nextPlayer];
@@ -256,13 +245,49 @@ app.get('/changecurrentplayer/', function(req, res) {
 	});
 });
 
+app.get('/winner', function(req, res) {
+	var gameid = req.query.gameid;
+	var players = req.query.player;
+	gamestate.find({'gamestate.gameid': gameid}, function (err, docs) {
+		if (err) { return 'error' }
+		else {
+			var scores = docs[0].gamestate.scores;
+			yo = new Players;
+			var winnerNum = yo.winner(scores, players);
+			res.json({'winner' : docs[0].gamestate.players[winnerNum]});
+		};
+	});
+});
+
 app.get('/scores/', function(req, res) {
 	var gameid = req.query.gameid;
-	var add = req.query.add;
 	var player = req.query.player;
 	var added = false;
 	var word = req.query.word;
-	var currentplayer = 
+	var add = 0
+	var winner = false
+	table.find({'encasing.gameid': gameid}, function (err, docs) {
+		if (err) {
+			return 'error';
+		}
+		else {
+			var combos = docs[0].encasing.combos;
+			var index = combos.indexOf(word);
+			if (index != -1){
+				add = 1
+				combos.splice(index, 1)
+				if (combos.length == 0){
+					winner = true
+				};
+				table.findAndModify({"encasing.gameid" : gameid},
+				{$set:{"encasing.combos" : combos}});
+				res.json({'answer': 'Correct', 'winner' : winner});
+			}
+			else {
+				res.json({'answer' : 'Wrong', 'winner': winner});
+			};
+		};
+	});
 	gamestate.find({'gamestate.gameid' : gameid}, function (err, docs) {
 		if (err) {
 			return 'error';

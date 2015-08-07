@@ -18,6 +18,12 @@ module.exports = function(io) {
     });  	
     socket.on('checkStatus', function(msg) {
       io.to(a).emit('checkStatus', msg);
+    });
+    socket.on('newAnswers', function(msg) {
+      io.to(a).emit('newAnswers', msg);
+    });
+    socket.on('endgame', function(msg) {
+      io.to(a).emit('endgame', msg);
     })
   });
 };

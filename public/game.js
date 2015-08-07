@@ -1,6 +1,7 @@
 function Players(){
 	this.player = null; // will hold the number the player is
 	this.msg = '';
+	this.winner = ''
 };
 
 $(document).ready(function(){
@@ -45,7 +46,6 @@ $(document).ready(function(){
 		});
 	});
 
-
     $('#chat').on('submit', function(){
         socket.emit('chat message', username + ': ' + $('#m').val());
     $('#m').val('');
@@ -60,19 +60,16 @@ $(document).ready(function(){
 	$('#guess').on('submit', function(e){
 		e.preventDefault();
 		var word = $("[name='word']").val(); //what the player entered to try
-		var match = answers.indexOf(word.toLowerCase()); // will return -1 if not found else returns the index
-		var add = 1
-		if (match == -1){
-			var add = 0;
-		};
-		if (match != -1) {
+		$.getJSON('/scores/', {'gameid':gameid, 'player' : yo.player, 'word' : word}, function(data) {
+			if (data.answer == 'Correct') {
 				socket.emit('correctAnswer', 'Correct!');
 			}
-		else{
-			socket.emit('wrongAnswer', 'wrong');
-		};
-		$.getJSON('/scores/', {'gameid':gameid, 'player' : yo.player, 'add' : add, 'word' : word}, function(data) {
-			
+			else if (data.answer == 'Wrong') {
+				socket.emit('wrongAnswer', 'wrong');
+			}
+			if (data.winner == true) {
+				$('body').trigger('gameOver');
+			};
 		});
 		$('[name=word]').val('');
 		$('body').trigger('changePlayer');
@@ -88,8 +85,25 @@ $(document).ready(function(){
 		}
 	});
 
+	$("body").on('gameOver', function() {
+		$.getJSON("/winner/", {'gameid' : gameid, 'players' : players}, function(data) {
+			yo.winner = data.winner;
+			socket.emit('endgame', yo.winner);
+		});
+	});
+
+	$('body').on('endgame', function() {
+		$('[type=submit]').attr('disabled', 'disabled');
+		$('#status').html(yo.winner + ' wins!')
+	});
+
+	socket.on('endgame', function(msg) {
+		yo.winner = msg
+		$('body').trigger('endgame');
+	});
+
 	socket.on('checkStatus', function(msg) {
-		yo.msg = msg
+		yo.msg = msg;
 		$('body').trigger('checkStatus');
 	});
 	socket.on('nextPlayer', function(msg) {
