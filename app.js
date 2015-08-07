@@ -314,5 +314,5 @@ app.get('/scores/', function(req, res) {
 	});
 });
 
-seedDb()
+// seedDb()
 
