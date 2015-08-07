@@ -23,15 +23,15 @@ var lineReader = require('line-reader');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-/////// Use this to seed Db //////
-function seedDb(){
-	var counter = 0
-	lineReader.eachLine('dictionary.txt', function(line) {
-		users.insert({ "word": line });
-		console.log('Word ' + counter + ' added!');
-		counter += 1;
-	});
-};
+// ///// Use this to seed Db //////
+// function seedDb(){
+// 	var counter = 0
+// 	lineReader.eachLine('dictionary.txt', function(line) {
+// 		users.insert({ "word": line });
+// 		console.log('Word ' + counter + ' added!');
+// 		counter += 1;
+// 	});
+// };
 
 // Board class & cooresponding prototypes //////
 function Board() {
@@ -41,9 +41,9 @@ function Board() {
 Board.prototype.createBoard = function(){
 	var grid = [];
 	var final_grid = [];
-	var letters = ['A','B','C','D','E','F','G','H','I','J','K',
-				'L','M','N','O','P','Q','R','S','T','U','V','W','X',
-				'Y','Z'];
+	var letters = ['A','B','C','D','E','F','O','G','H','I','J','K',
+				'L','M','N','U','O','P','E','Q','I','R','S','T','U','V','W','X',
+				'Y','Z', 'A'];
 	for (var i=0; i<255; i++){
 		var rand = Math.floor(Math.random() * letters.length);
 		grid.push(letters[rand]);
@@ -65,13 +65,15 @@ Board.prototype.parseThrough = function( callback ) {
 		}
 		else{
 			for (var i = 0; i < docs.length; i++){
-				if (docs[i].word.length > 2){
+				if (docs[i].word.length > 3){
 					a = yo.findWords(docs[i].word) ;
 					if (a != undefined){
-						combos.push(a.toLowerCase())
-					}
-				}	
-			}
+						if (combos.indexOf(a) == -1){
+							combos.push(a.toLowerCase())
+						};
+					};
+				};	
+			};
 			callback (combos)
 		};
 	});
@@ -81,7 +83,7 @@ Board.prototype.findWords = function(word) {
 	var yo = this;
 	for (var i = 0; i < yo.board.length; i ++) {
 		for (var j = 0; j < yo.board[i].length; j++) {
-			if (yo.board[i][j] == word[0]) {
+			if (yo.board[i][j] == word[0].toUpperCase()) {
 				if (j + word.length <= 15){
 					if (yo.board[i].slice(j, (j + word.length)) == word.toUpperCase()) {
 						return word
@@ -315,4 +317,3 @@ app.get('/scores/', function(req, res) {
 });
 
 // seedDb()
-

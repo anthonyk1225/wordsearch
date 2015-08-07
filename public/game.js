@@ -5,8 +5,9 @@ function Players(){
 };
 
 $(document).ready(function(){
-	var username = prompt('What is your name?');
+	var username = prompt('What is your name?', '');
     var socket = io.connect();
+   	socket.emit('loggedin', username + ' has logged in');
 
 	var pathname = window.location.pathname; //pathname that holds # of players
 	var players = pathname[parseInt(pathname.length - 1)]; // number of players
@@ -14,7 +15,7 @@ $(document).ready(function(){
 	var answers = $('#combos p').html().split(','); //create a variable of all the words in the grid
 
 	var gameid = window.location.pathname.replace('/newgame/', '');
-	var gameid = gameid.replace('/', '');
+	gameid = gameid.replace('/', '');
 
 	yo = new Players;
 
@@ -101,7 +102,12 @@ $(document).ready(function(){
 		yo.winner = msg
 		$('body').trigger('endgame');
 	});
-
+	socket.on('loggedin', function(msg) {
+		$('#messages').append($('<li>').text(msg));
+	});
+	socket.on('loggedout', function(msg) {
+		$('#messages').append($('<li>').text(username + msg));
+	})
 	socket.on('checkStatus', function(msg) {
 		yo.msg = msg;
 		$('body').trigger('checkStatus');
