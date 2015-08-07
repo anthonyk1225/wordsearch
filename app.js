@@ -24,14 +24,14 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
 /////// Use this to seed Db //////
-// function seedDb(){
-// 	var counter = 0
-// 	lineReader.eachLine('dictionary.txt', function(line) {
-// 		users.insert({ "word": line });
-// 		console.log('Word ' + counter + ' added!');
-// 		counter += 1;
-// 	});
-// };
+function seedDb(){
+	var counter = 0
+	lineReader.eachLine('dictionary.txt', function(line) {
+		users.insert({ "word": line });
+		console.log('Word ' + counter + ' added!');
+		counter += 1;
+	});
+};
 
 // Board class & cooresponding prototypes //////
 function Board() {
