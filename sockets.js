@@ -4,8 +4,8 @@ module.exports = function(io) {
     var a = socket.handshake.headers.referer.slice(30).replace('/', '')
     socket.join(a);
 
-    socket.on('disconnect', function(){
-      io.to(a).emit('loggedout', ' has logged out')
+    socket.on('loggedout', function(msg){
+      io.to(a).emit('loggedout', msg);
     });
 
     socket.on('chat message', function(msg){

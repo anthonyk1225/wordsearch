@@ -98,6 +98,10 @@ $(document).ready(function(){
 		$('#status').html(yo.winner + ' wins!')
 	});
 
+	$(window).on('unload', function () {
+		socket.emit('loggedout', username + ' has logged out');
+	})
+
 	socket.on('endgame', function(msg) {
 		yo.winner = msg
 		$('body').trigger('endgame');
@@ -106,7 +110,7 @@ $(document).ready(function(){
 		$('#messages').append($('<li>').text(msg));
 	});
 	socket.on('loggedout', function(msg) {
-		$('#messages').append($('<li>').text(username + msg));
+		$('#messages').append($('<li>').text(msg));
 	})
 	socket.on('checkStatus', function(msg) {
 		yo.msg = msg;
