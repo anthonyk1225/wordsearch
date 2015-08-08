@@ -1,7 +1,7 @@
 ///// Socket commands ////
 module.exports = function(io) {
   io.on('connection', function(socket){
-    var a = socket.handshake.headers.referer.slice(30).replace('/', '')
+    var a = socket.handshake.headers.referer.slice(30).replace('/', '');
     socket.join(a);
 
     socket.on('loggedout', function(msg){

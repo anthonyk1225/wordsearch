@@ -1,23 +1,20 @@
 function Players(){
 	this.player = null; // will hold the number the player is
 	this.msg = '';
-	this.winner = ''
+	this.winner = '';
 };
 
 $(document).ready(function(){
 	var username = prompt('What is your name?', '');
     var socket = io.connect();
    	socket.emit('loggedin', username + ' has logged in');
-
 	var pathname = window.location.pathname; //pathname that holds # of players
 	var players = pathname[parseInt(pathname.length - 1)]; // number of players
-
 	var answers = $('#combos p').html().split(','); //create a variable of all the words in the grid
-
 	var gameid = window.location.pathname.replace('/newgame/', '');
 	gameid = gameid.replace('/', '');
-
 	yo = new Players;
+
 
 	$.getJSON("/playerassignment", {'gameid' : gameid, 'username' : username, 
 		'players' : players}, function(data) {
@@ -31,32 +28,6 @@ $(document).ready(function(){
 		$('body').trigger('nextStep');
 	});
 
-	$("body").on('nextStep', function(){
-		$.getJSON("/findcurrentplayer/", {'gameid' : gameid }, function(data){
-			socket.emit('nextPlayer', data.username + "'s turn!");
-			if (username != data.username){
-				$('[type=submit]').attr('disabled', 'disabled');
-			}
-		});
-	});
-
-	$("body").on('changePlayer', function() {
-		$.getJSON("/changecurrentplayer/", {'gameid' : gameid, 'players' : players}, function(data) {
-			socket.emit('nextPlayer', data.username + "'s turn!");
-			socket.emit('checkStatus', data.username);
-		});
-	});
-
-    $('#chat').on('submit', function(){
-        socket.emit('chat message', username + ': ' + $('#m').val());
-    $('#m').val('');
-        return false;
-    });
-
-    socket.on('chat message', function(msg){
-        $('#messages').append($('<li>').text(msg));
-        $('#messages').scrollTop(99999999999999999999999999999);
-    });
 
 	$('#guess').on('submit', function(e){
 		e.preventDefault();
@@ -74,36 +45,57 @@ $(document).ready(function(){
 		});
 		$('[name=word]').val('');
 		$('body').trigger('changePlayer');
-		// $('#scores p').append(yo.playerScores[1]);
 	});
 
+
+	$("body").on('nextStep', function(){
+		$.getJSON("/findcurrentplayer/", {'gameid' : gameid }, function(data){
+			socket.emit('nextPlayer', data.username + "'s turn!");
+			if (username != data.username){
+				$('[type=submit]').attr('disabled', 'disabled');
+			};
+		});
+	});
+	$("body").on('changePlayer', function() {
+		$.getJSON("/changecurrentplayer/", {'gameid' : gameid, 'players' : players}, function(data) {
+			socket.emit('nextPlayer', data.username + "'s turn!");
+			socket.emit('checkStatus', data.username);
+		});
+	});
+    $('#chat').on('submit', function(){
+        socket.emit('chat message', username + ': ' + $('#m').val());
+    $('#m').val('');
+        return false;
+    });
 	$('body').on('checkStatus', function() {
 		if (username != yo.msg){
 			$('[type=submit]').attr('disabled', 'disabled');
 		}
 		else {
 			$('[type=submit]').removeAttr('disabled');
-		}
+		};
 	});
-
 	$("body").on('gameOver', function() {
 		$.getJSON("/winner/", {'gameid' : gameid, 'players' : players}, function(data) {
 			yo.winner = data.winner;
 			socket.emit('endgame', yo.winner);
 		});
 	});
-
 	$('body').on('endgame', function() {
 		$('[type=submit]').attr('disabled', 'disabled');
-		$('#status').html(yo.winner + ' wins!')
+		$('#status').html(yo.winner + ' wins!');
 	});
-
 	$(window).on('unload', function () {
 		socket.emit('loggedout', username + ' has logged out');
-	})
+	});
 
+
+	socket.on('chat message', function(msg){
+        $('#messages').append($('<li>').text(msg));
+        $('#messages').scrollTop(99999999999999999999999999999);
+    });
 	socket.on('endgame', function(msg) {
-		yo.winner = msg
+		yo.winner = msg;
 		$('body').trigger('endgame');
 	});
 	socket.on('loggedin', function(msg) {
@@ -111,7 +103,7 @@ $(document).ready(function(){
 	});
 	socket.on('loggedout', function(msg) {
 		$('#messages').append($('<li>').text(msg));
-	})
+	});
 	socket.on('checkStatus', function(msg) {
 		yo.msg = msg;
 		$('body').trigger('checkStatus');
@@ -125,6 +117,8 @@ $(document).ready(function(){
 	socket.on('correctAnswer', function(msg){
 		$('#status').html(msg);
 	});
+
+
 });
 
 
