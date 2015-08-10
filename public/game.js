@@ -10,7 +10,6 @@ $(document).ready(function(){
    	socket.emit('loggedin', username + ' has logged in');
 	var pathname = window.location.pathname; //pathname that holds # of players
 	var players = pathname[parseInt(pathname.length - 1)]; // number of players
-	// var answers = $('#combos p').html().split(','); //create a variable of all the words in the grid
 	var gameid = window.location.pathname.replace('/newgame/', '');
 	gameid = gameid.replace('/', '');
 	yo = new Players;
@@ -85,10 +84,10 @@ $(document).ready(function(){
 		$('[type=submit]').attr('disabled', 'disabled');
 		$('#status').html(yo.winner + ' wins!');
 	});
+
 	$(window).on('unload', function () {
 		socket.emit('loggedout', username + ' has logged out');
 	});
-
 
 	socket.on('chat message', function(msg){
         $('#messages').append($('<li>').text(msg));

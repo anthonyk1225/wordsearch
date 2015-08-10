@@ -118,11 +118,11 @@ function Players(){
 };
 
 Players.prototype.nextPlayer = function( player, totalPlayers ) {
-	if (player + 1 != totalPlayers ) {
-		return player + 1;
+	if (player + 1 == totalPlayers ) {
+		return 0;
 	}
 	else {
-		return 0;
+		return player + 1;
 	};
 };
 
@@ -186,13 +186,13 @@ app.get('/playerassignment', function(req, res) { // takes a player and enters t
 				for (i = 0; i < keys.length; i++){
 					if (players[i] == username){
 						keepWorking = false;
-						res.json({'yourNumber' : nextEntry});
+						res.json({'yourNumber' : i, 'guesses' : docs[0].gamestate.guessed_answers});
 					};
 				};
 			};
 			if (keepWorking == true){
 				if (nextEntry == playerMax){
-					res.json({'full': 'Sorry, this game is full!'});
+					res.json({'full': 'Sorry, this game is full!', 'guesses' : docs[0].gamestate.guessed_answers});
 				}
 				else  {
 					players[nextEntry] = username;
@@ -201,7 +201,7 @@ app.get('/playerassignment', function(req, res) { // takes a player and enters t
 						gamestate.findAndModify({"gamestate.gameid" : gameid},
 							{$set:{"gamestate.current_player" : {'username': username, 'number' : nextEntry}}});	
 					};
-					res.json({'yourNumber' : nextEntry});
+					res.json({'yourNumber' : nextEntry, 'guesses' : docs[0].gamestate.guessed_answers});
 				};
 			};
 		};
@@ -256,12 +256,14 @@ app.get('/scores/', function(req, res) {
 	var word = req.query.word;
 	var add = 0;
 	var winner = false;
+	var update = false
 	table.find({'encasing.gameid': gameid}, function (err, docs) {
 		if (err) {return 'error'}
 		else {
 			var combos = docs[0].encasing.combos;
 			var index = combos.indexOf(word);
 			if (index != -1){
+				update = true
 				add = 1;
 				combos.splice(index, 1)
 				if (combos.length == 0){
@@ -283,8 +285,10 @@ app.get('/scores/', function(req, res) {
 			var keys = Object.keys(scores);
 			var guesses = docs[0].gamestate.guessed_answers;
 			if (keys.length > 0) {
+				console.log(keys)
 				console.log(add)
 				console.log(scores)
+				console.log(player)
 				for (i = 0; i < keys.length; i++){
 					if (keys[i] == player) {
 						added = true;
@@ -295,11 +299,17 @@ app.get('/scores/', function(req, res) {
 			if (added == false) {
 				scores[player] = add
 			};
-			guesses.push(word);
+			if (update == true) {
+				guesses.push(word);
+			};
 			gamestate.findAndModify({"gamestate.gameid" : gameid},{$set:{"gamestate.guessed_answers" : guesses}});			
 			gamestate.findAndModify({"gamestate.gameid" : gameid},{$set:{"gamestate.scores" : scores}});
 		};
 	});
+});
+
+app.get('/updateFoundWords', function(req, res) {
+	null
 });
 
 // seedDb()
