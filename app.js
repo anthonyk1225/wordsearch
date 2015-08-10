@@ -156,7 +156,7 @@ app.get(/\/newgame\/([0-9]+)\/([2-5]{1})/, function(req, res) {
 					table.insert({encasing : {'gameid' : gameid, 'board' : yo.board, 'combos': combos}});
 					gamestate.insert({ 'gamestate' : {  'gameid': gameid, 'current_player' : {},
 					 'scores' : {} ,'guessed_answers' : [], 'players' : {} }});
-					res.render('game', {board: yo.board, 'combos' : combos});
+					res.render('game', {board: yo.board});
 				});
 			}
 			else {
@@ -283,10 +283,12 @@ app.get('/scores/', function(req, res) {
 			var keys = Object.keys(scores);
 			var guesses = docs[0].gamestate.guessed_answers;
 			if (keys.length > 0) {
+				console.log(add)
+				console.log(scores)
 				for (i = 0; i < keys.length; i++){
 					if (keys[i] == player) {
 						added = true;
-						scores[i] = parseInt(scores[i]) + parseInt(add);
+						scores[i] = parseInt(scores[i]) + add;
 					};
 				};
 			};

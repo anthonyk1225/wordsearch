@@ -12,39 +12,41 @@
         <script type="text/javascript" src="/game.js"></script>  
     </head>
     <body>	
-	    <div id='container'>
-			<div id='gameGrid'>
+	    <span id='container'>
+			<span id='gameGrid'>
                 <% if (board) { %>
                 <% for (var i=0; i<board.length; i++){%>
                     <p><%= board[i] %></p>
                     <% } %>
                 <% } %>
-			</div>
+			</span>
 
-			<div id='gameArea'>
+			<span id='gameArea'>
                 <p></p>
                 <form name='guessForm' id='guess'>
                     <input name='word' type='text'>
                     <input type='submit' value='Submit'>
                 </form>
                 <h3 id='status'></h3>
-			</div>
+                <span id='guesses' class='forPlayer'>
+                    <h3>Found Words</h3>
+                    <ul>No Words Found Yet</ul>
+                </span>
+			</span>
 
-            <ul id="messages"></ul>
-            <form id='chat' action="">
-            <input id="m" autocomplete="off" /><button>Send</button>
-            </form>
+            <span id='chatBox'>
+                <ul id="messages"></ul>
+                <form id='chat' action="">
+                    <input id="m" autocomplete="off">
+                    <button>Send</button>
+                </form>
+            </span>
 
-            <div id='scores'>
-                <p></p>
-            </div>
-				
-			<div id='combos'>
-                <h2>Answers</h2>
-                <% if (combos) { %>
-                    <p><%= combos %></p>
-                <% } %>
-			</div>
-		</div>
+            <span id='scores'>
+                <h3>Scores</h3>
+                <p>No Scores Yet</p>
+            </span>
+	
+		</spanc>
 	</body>
 </html>
