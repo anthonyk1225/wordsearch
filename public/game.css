@@ -41,6 +41,8 @@ body {
 
 #gameArea{
 	margin-left: 2em;
+	max-height: 39em;
+	overflow-y: auto;
 }
 
 #scores{
@@ -67,6 +69,14 @@ body {
 
 #messages li { 
   padding: 5px 10px; 
+}
+
+.wrong {
+	color: red;
+}
+
+.correct {
+	color: green;
 }
 
 @media screen and (max-width: 767px) {

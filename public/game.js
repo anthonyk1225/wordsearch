@@ -31,13 +31,15 @@ $(document).ready(function(){
 	$('#guess').on('submit', function(e){
 		e.preventDefault();
 		var word = $("[name='word']").val(); //what the player entered to try
+		socket.emit('chat message', '<li>' + username + ' guessed the word ' + word + '</li>')
 		$.getJSON('/scores/', {'gameid':gameid, 'player' : yo.player, 'word' : word}, function(data) {
 			if (data.answer == 'Correct') {
-				socket.emit('correctAnswer', 'Correct!');
+				socket.emit('chat message', '<li class="correct">' + username + ' was correct</li>');
+				$('body').trigger('updateScores');
 			}
 			else if (data.answer == 'Wrong') {
-				socket.emit('wrongAnswer', 'wrong');
-			}
+				socket.emit('chat message', '<li class="wrong">' + username + ' was wrong</li>');
+			};
 			if (data.winner == true) {
 				$('body').trigger('gameOver');
 			};
@@ -53,6 +55,15 @@ $(document).ready(function(){
 			if (username != data.username){
 				$('[type=submit]').attr('disabled', 'disabled');
 			};
+			$('body').trigger('foundWords');
+		});
+	});
+	$('body').on('foundWords', function() {
+		$.getJSON("/updateFoundWords/", {'gameid' : gameid }, function(data){
+			if (data.length > 0){
+				socket.emit('updateFoundWords', data);
+			};
+			$('body').trigger('updateScores');
 		});
 	});
 	$("body").on('changePlayer', function() {
@@ -62,7 +73,7 @@ $(document).ready(function(){
 		});
 	});
     $('#chat').on('submit', function(){
-        socket.emit('chat message', username + ': ' + $('#m').val());
+        socket.emit('chat message', '<li>' + username + ': ' + $('#m').val() + '</li>');
     $('#m').val('');
         return false;
     });
@@ -80,6 +91,13 @@ $(document).ready(function(){
 			socket.emit('endgame', yo.winner);
 		});
 	});
+	$("body").on('updateScores', function() {
+		$.getJSON("/updateScores/", {'gameid' : gameid}, function(data) {
+			if (data.scores.length > 0){
+				socket.emit('scores', data.scores);
+			};
+		});
+	});	
 	$('body').on('endgame', function() {
 		$('[type=submit]').attr('disabled', 'disabled');
 		$('#status').html(yo.winner + ' wins!');
@@ -88,9 +106,13 @@ $(document).ready(function(){
 	$(window).on('unload', function () {
 		socket.emit('loggedout', username + ' has logged out');
 	});
-
+	socket.on('updateFoundWords', function(msg) {
+		if ($('#guesses ul').html() == "No Words Found Yet"){
+			$('#guesses ul').html('<li>'+msg+'</li>');
+		}
+	});
 	socket.on('chat message', function(msg){
-        $('#messages').append($('<li>').text(msg));
+        $('#messages').append($(msg));
         $('#messages').scrollTop(99999999999999999999999999999);
     });
 	socket.on('endgame', function(msg) {
@@ -110,12 +132,9 @@ $(document).ready(function(){
 	socket.on('nextPlayer', function(msg) {
 		$('#gameArea p').html(msg);
 	});
-	socket.on('wrongAnswer', function(msg){
-		$('#status').html(msg);
-	});
-	socket.on('correctAnswer', function(msg){
-		$('#status').html(msg);
-	});
+	socket.on('scores', function(msg) {
+		$('#scores p').html(msg);
+	})
 
 
 });

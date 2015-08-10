@@ -285,10 +285,6 @@ app.get('/scores/', function(req, res) {
 			var keys = Object.keys(scores);
 			var guesses = docs[0].gamestate.guessed_answers;
 			if (keys.length > 0) {
-				console.log(keys)
-				console.log(add)
-				console.log(scores)
-				console.log(player)
 				for (i = 0; i < keys.length; i++){
 					if (keys[i] == player) {
 						added = true;
@@ -309,7 +305,29 @@ app.get('/scores/', function(req, res) {
 });
 
 app.get('/updateFoundWords', function(req, res) {
-	null
+	var gameid = req.query.gameid;
+	gamestate.find({'gamestate.gameid' : gameid}, function (err, docs) {
+		if (err) {return 'error'}
+		else {
+			res.json(docs[0].gamestate.guessed_answers);
+		};
+	});
+});
+
+app.get('/updateScores', function(req,res) {
+	var gameid = req.query.gameid;
+	gamestate.find({'gamestate.gameid' : gameid}, function (err, docs) {
+		if (err) {return 'error'}
+		else {
+			var scores = docs[0].gamestate.scores;
+			var keys = Object.keys(scores);
+			var data = []
+			for (i = 0; i<keys.length; i++){
+				data.push(docs[0].gamestate.players[i] + ' - ' + scores[i] + '00 ');
+			};
+			res.json({'scores' : data});
+		};
+	});
 });
 
 // seedDb()

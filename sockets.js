@@ -40,5 +40,13 @@ module.exports = function(io) {
       io.to(a).emit('loggedin', msg);
     });
 
+    socket.on('updateFoundWords', function(msg) {
+      io.to(a).emit('updateFoundWords', msg);
+    });
+
+    socket.on('scores', function(msg) {
+      io.to(a).emit('scores', msg);
+    });    
+
   });
 };
