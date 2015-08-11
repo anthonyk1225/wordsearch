@@ -52,8 +52,11 @@ body {
 }
 
 #chat {
+	border-top : solid black;
 	left: 40em;
 	top: 35em;
+	margin: 0;
+	padding: .25em;
 }
 
 #messages { 
