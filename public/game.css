@@ -35,13 +35,13 @@ body {
 #chatBox {
 	display: inline-block;
 	position: absolute;
-	right: 0;
+	right: 0.5em;
 	background-color: #ecf0f1;
 }
 
 #gameArea{
-	margin-left: 2em;
-	max-height: 39em;
+	margin-left: 4em;
+	max-height: 21em;
 	overflow-y: auto;
 }
 
