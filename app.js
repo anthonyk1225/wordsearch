@@ -240,7 +240,7 @@ app.get('/changecurrentplayer/', function(req, res) {
 
 app.get('/winner', function(req, res) {
 	var gameid = req.query.gameid;
-	var players = req.query.player;
+	var players = req.query.players;
 	gamestate.find({'gamestate.gameid': gameid}, function (err, docs) {
 		if (err) { return 'error' }
 		else {
@@ -256,7 +256,7 @@ app.get('/scores/', function(req, res) {
 	var gameid = req.query.gameid;
 	var player = req.query.player;
 	var added = false;
-	var word = req.query.word;
+	var word = req.query.word.toLowerCase();
 	var add = 0;
 	var winner = false;
 	var update = false
