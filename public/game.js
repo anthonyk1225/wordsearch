@@ -15,16 +15,13 @@ $(document).ready(function(){
 	yo = new Players;
 
 
-	$.getJSON("/playerassignment", {'gameid' : gameid, 'username' : username, 
-		'players' : players}, function(data) {
-		var keys = Object.keys(data);
-		if (keys[0] == 'full') {
-			alert(data.full);
+	$.getJSON("/gameover", {'gameid' : gameid}, function(data) {
+		if (data.gameover == true) {
+			$('body').trigger('gameOver');
 		}
 		else {
-			yo.player = data.yourNumber;	
+			$('body').trigger('continueGame');
 		};
-		$('body').trigger('nextStep');
 	});
 
 
@@ -34,8 +31,8 @@ $(document).ready(function(){
 		socket.emit('chat message', '<li>' + username + ' guessed the word ' + word + '</li>')
 		$.getJSON('/scores/', {'gameid':gameid, 'player' : yo.player, 'word' : word}, function(data) {
 			if (data.answer == 'Correct') {
+				$('body').trigger('foundWords');
 				socket.emit('chat message', '<li class="correct">' + username + ' was correct</li>');
-				$('body').trigger('updateScores');
 			}
 			else if (data.answer == 'Wrong') {
 				socket.emit('chat message', '<li class="wrong">' + username + ' was wrong</li>');
@@ -49,6 +46,19 @@ $(document).ready(function(){
 	});
 
 
+	$('body').on('continueGame', function() {	
+		$.getJSON("/playerassignment", {'gameid' : gameid, 'username' : username, 
+			'players' : players}, function(data) {
+			var keys = Object.keys(data);
+			if (keys[0] == 'full') {
+				alert(data.full);
+			}
+			else {
+				yo.player = data.yourNumber;	
+			};
+			$('body').trigger('nextStep');
+		});
+	});
 	$("body").on('nextStep', function(){
 		$.getJSON("/findcurrentplayer/", {'gameid' : gameid }, function(data){
 			socket.emit('nextPlayer', data.username + "'s turn!");
@@ -89,6 +99,7 @@ $(document).ready(function(){
 		$.getJSON("/winner/", {'gameid' : gameid, 'players' : players}, function(data) {
 			yo.winner = data.winner;
 			socket.emit('endgame', yo.winner);
+			socket.emit('chat message', '<li class="correct">' + yo.winner + ' wins!</li>' )
 		});
 	});
 	$("body").on('updateScores', function() {
@@ -103,13 +114,14 @@ $(document).ready(function(){
 		$('#status').html(yo.winner + ' wins!');
 	});
 
+
 	$(window).on('unload', function () {
 		socket.emit('loggedout', username + ' has logged out');
 	});
+
+
 	socket.on('updateFoundWords', function(msg) {
-		if ($('#guesses ul').html() == "No Words Found Yet"){
-			$('#guesses ul').html('<li>'+msg+'</li>');
-		}
+		$('#guesses ul').html('<li>'+msg+'</li>');
 	});
 	socket.on('chat message', function(msg){
         $('#messages').append($(msg));

@@ -333,3 +333,19 @@ app.get('/updateScores', function(req,res) {
 	});
 });
 
+app.get('/gameover', function(req, res) {
+	var gameid = req.query.gameid;
+	table.find({'encasing.gameid' : gameid}, function (err, docs) {
+		if (err) {return 'error'}
+		else {
+			console.log(docs[0].encasing.combos)
+			if (docs[0].encasing.combos.length == 0) {
+				res.json({'gameover' : true});
+			}
+			else {
+				res.json({'gameover' : false});
+			};
+		};
+	});
+});
+
