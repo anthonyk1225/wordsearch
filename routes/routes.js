@@ -126,7 +126,7 @@ module.exports = function(app) {
 		var word = req.query.word.toLowerCase();
 		var add = 0;
 		var winner = false;
-		var update = false
+		var update = false;
 		table.find({'encasing.gameid': gameid}, function (err, docs) {
 			if (err) {return 'error'}
 			else {
