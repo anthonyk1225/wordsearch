@@ -23,7 +23,7 @@ var lineReader = require('line-reader');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-// ///// Use this to seed Db //////
+///// Use this to seed Db //////
 // function seedDb(){
 // 	var counter = 0
 // 	lineReader.eachLine('dictionary.txt', function(line) {
@@ -33,6 +33,8 @@ app.use(express.static('public'));
 // 	});
 // };
 
+// seedDb();
+
 // Board class & cooresponding prototypes //////
 function Board() {
 	this.board = this.createBoard();	
@@ -41,16 +43,17 @@ function Board() {
 Board.prototype.createBoard = function(){
 	var grid = [];
 	var final_grid = [];
-	var letters = ['A','B','C','D','E','F','O','G','H','I','J','K',
-				'L','M','N','U','O','P','E','Q','I','R','S','T','U','V','W','X',
-				'Y','Z', 'A'];
+	var letters = ['P', 'A', 'C', 'B', 'I','U', 'H','T','N','S','C','D','D','R','E','F', 'O','R','A','I','E','H','T','A','I','E','J','K',
+				'T','N','L','A','H', 'F', 'E','M','S', 'T','E','H','O','L','R','I','E','O','E','R','N','A','O','T','P','R', 'S','T', 'U','W','X',
+			 'Y','T','N','S','I','N', 'M', 'Z','S','L', 'C', 'R','D','H','O','E','L','T','A','E','N','E','A','I','E','E','O','A','O','T',
+			 'I','N','S','G'];
 	for (var i=0; i<255; i++){
 		var rand = Math.floor(Math.random() * letters.length);
 		grid.push(letters[rand]);
 	};
 	for (var i=1; i<16; i++){
 		var entry = grid.slice(i*15,(i*15)+15);
-		var entry = entry.join('');
+		entry = entry.join('');
 		final_grid.push(entry);
 	};
 	return final_grid;
@@ -330,4 +333,3 @@ app.get('/updateScores', function(req,res) {
 	});
 });
 
-// seedDb()
