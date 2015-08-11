@@ -121,7 +121,10 @@ $(document).ready(function(){
 
 
 	socket.on('updateFoundWords', function(msg) {
-		$('#guesses ul').html('<li>'+msg+'</li>');
+		var template = $('#words').html();
+		Mustache.parse(template);
+		var rendered = Mustache.render(template, {'words': msg});
+		$('#guesses').html(rendered);
 	});
 	socket.on('chat message', function(msg){
         $('#messages').append($(msg));

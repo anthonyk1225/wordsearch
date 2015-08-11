@@ -338,7 +338,6 @@ app.get('/gameover', function(req, res) {
 	table.find({'encasing.gameid' : gameid}, function (err, docs) {
 		if (err) {return 'error'}
 		else {
-			console.log(docs[0].encasing.combos)
 			if (docs[0].encasing.combos.length == 0) {
 				res.json({'gameover' : true});
 			}

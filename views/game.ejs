@@ -30,7 +30,8 @@
                 <h2 id='status'></h2>
                 <span id='guesses' class='forPlayer'>
                     <h3>Found Words</h3>
-                    <ul>No Words Found Yet</ul>
+                    <ul>No Words Found Yet
+                    </ul>
                 </span>
 			</span>
 
@@ -49,4 +50,13 @@
             	
 		</spanc>
 	</body>
+
+     <script id='words' type='x-tmpl-mustache'>
+        <h3>Found Words</h3>
+        {{#words}}
+            <li>{{.}}</li>
+        {{/words}}
+    </script>
 </html>
+
+
