@@ -1,6 +1,35 @@
 /* Index page */
+.navbar {
+	color: white;
+}
+
+#container {
+	height: 50em;
+}
+
 body {
-	background-color: #bdc3c7;
+	background-color: #16a085;
+}
+
+#head {
+	border-bottom: solid black .1em;
+}
+
+#logo{
+	height: 5em;
+	width: 4.5em;
+	background-image: url('/Drawing.png');
+	background-size: cover;
+	margin: -4em auto 2em auto;
+}
+
+#gameMenu{
+	background-color: #ecf0f1;
+	height: 40em;
+	width: 40em;
+	margin: 0 auto 0 auto;
+	padding: 8em 5em 5em 5em;
+	border-radius: 1em;
 }
 
 #newGame{
@@ -13,6 +42,7 @@ body {
 	margin-top: 1em;
 	font-family: calibri;
 	text-align: center;
+	font-size: 1.25em;
 }
 
 /* Game page */
@@ -24,7 +54,7 @@ body {
 #gameArea, #gameGrid {
 	display: inline-block;
 	vertical-align: top;
-	font-size: 2em;
+	font-size: 1.75em;
 	float: left;
 }
 
@@ -67,7 +97,7 @@ body {
   	padding: 0; 
 	overflow-y: auto;
   	height: 39em;
-  	width: 28.5em;
+  	width: 32em;
 }
 
 #messages li { 

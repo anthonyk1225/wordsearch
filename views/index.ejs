@@ -9,9 +9,18 @@
         <script type="text/javascript" src="base.js"></script>   
     </head>
     <body>
-        <div id='container'>
+        <div id='gameContainer'>
+            <nav class="navbar navbar-inverse">
+              <div class="container-fluid">
+                <div class="navbar-header">
+                </div>
+              </div>
+            </nav>
+            <div id='gameMenu'>
+                <div id='logo'></div>
             <div id='gameForm'>
                 <form id="newGame" method="GET"> 
+                    <p id='head'>Select the amount of players you'd like, and hit create!</p>
                     <p>How many players?<p>
                         <select class="btn-info" id="players" name="players">
                             <option value="2">2</option>
@@ -19,11 +28,14 @@
                             <option value="4">4</option>
                             <option value="5">5</option>
                         </select> 
-                    <p>Start a new game!</p>
                     <button id='newGameButton' type="submit" class="btn btn-info" <p>Create</p>
                     </button>
+                    <br></br>
+                    <h2>Word Search with friends!</h2>
+                    <h2>or .. <i>enemies</i></h2>
                 </form>
             </div>
+        </div>
             <footer>
             </footer>
         </div>

@@ -13,6 +13,16 @@
     </head>
     <body>	
 	    <span id='container'>
+            <nav class="navbar navbar-inverse">
+              <div class="container-fluid">
+                <div class="navbar-header">
+                    <span id='scores'>
+                <h3>Scores</h3>
+                <p>No Scores Yet</p>
+            </span>
+                </div>
+              </div>
+            </nav>
 			<span id='gameGrid'>
                 <% if (board) { %>
                 <% for (var i=0; i<board.length; i++){%>
@@ -41,14 +51,9 @@
                     <input id="m" autocomplete="off">
                     <button>Send</button>
                 </form>
-            </span>
-
-            <span id='scores'>
-                <h3>Scores</h3>
-                <p>No Scores Yet</p>
-            </span>
+            </span>  
             	
-		</spanc>
+		</span>
 	</body>
 
      <script id='words' type='x-tmpl-mustache'>
