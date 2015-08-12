@@ -48,6 +48,7 @@ body {
 /* Game page */
 #gameGrid p {
 	margin: 0 0em 0 1em;
+	color: white;
   	font-family: monospace;
 }
 
@@ -59,8 +60,10 @@ body {
 }
 
 #gamegrid{
+	border-right: solid white .05em;
+	padding-right: 1em;
 	margin-bottom: 1em;
-	color:white;
+	color: white;
 }
 
 #chatBox {
