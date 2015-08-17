@@ -40,21 +40,17 @@ Board.prototype.createBoard = function(){
 Board.prototype.parseThrough = function( callback ) {
 	var yo = this;
 	var combos = [];
-	users.find({}, function (err, docs){
-		if (err) {return 'error'}
-		else{
-			for (var i = 0; i < docs.length; i++){
-				if (docs[i].word.length > 3){
-					a = yo.findWords(docs[i].word);
-					if (a != undefined){
-						if (combos.indexOf(a) == -1){
-							combos.push(a.toLowerCase());
-						};
-					};
-				};	
+	lineReader.eachLine('dictionary.txt', function(line) {
+		if (line.length > 3) {
+		var a = yo.findWords(line);
+			if (a != undefined){
+				if (combos.indexOf(a) == -1){
+					combos.push(a.toLowerCase());
+				};
 			};
-			callback (combos);
-		};
+		};	
+	}).then(function() {
+		callback (combos);
 	});
 };
 

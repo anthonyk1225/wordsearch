@@ -44,6 +44,10 @@ $(document).ready(function(){
 		$('[name=word]').val('');
 		$('body').trigger('changePlayer');
 	});
+	$('#pass').on('click', function(e) {
+		socket.emit('chat message', '<li>' + username + ' has passed</li>')
+		$('body').trigger('changePlayer');
+	});
 
 
 	$('body').on('continueGame', function() {	
@@ -63,7 +67,7 @@ $(document).ready(function(){
 		$.getJSON("/findcurrentplayer/", {'gameid' : gameid }, function(data){
 			socket.emit('nextPlayer', data.username + "'s turn!");
 			if (username != data.username){
-				$('[type=submit]').attr('disabled', 'disabled');
+				$('[type=submit], #pass').attr('disabled', 'disabled');
 			};
 			$('body').trigger('foundWords');
 		});
@@ -89,10 +93,10 @@ $(document).ready(function(){
     });
 	$('body').on('checkStatus', function() {
 		if (username != yo.msg){
-			$('[type=submit]').attr('disabled', 'disabled');
+			$('[type=submit], #pass').attr('disabled', 'disabled');
 		}
 		else {
-			$('[type=submit]').removeAttr('disabled');
+			$('[type=submit], #pass').removeAttr('disabled');
 		};
 	});
 	$("body").on('gameOver', function() {
@@ -110,7 +114,7 @@ $(document).ready(function(){
 		});
 	});	
 	$('body').on('endgame', function() {
-		$('[type=submit]').attr('disabled', 'disabled');
+		$('[type=submit], #pass').attr('disabled', 'disabled');
 		$('#status').html(yo.winner + ' wins!');
 	});
 

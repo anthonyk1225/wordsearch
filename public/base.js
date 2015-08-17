@@ -4,7 +4,7 @@ function randomNumber(){
 		var randomnumber = Math.floor(Math.random()*11);
 		number.push(randomnumber);
 	};
-	return number.join([separator = ''])
+	return number.join([separator = '']);
 };
 
 $(document).ready(function(){
