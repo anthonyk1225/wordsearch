@@ -117,7 +117,7 @@ body {
 	color: green;
 }
 
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 770px) {
     #gameArea {
         margin: 0 0 1em 1em;
     }
