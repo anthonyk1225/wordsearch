@@ -119,7 +119,7 @@ body {
 
 @media screen and (max-width: 980px) {
     #gameArea {
-        margin: 12em 0 1em 1em;
+        margin: 14em 0 1em 1em;
     }
     #chatBox {
     	width: 100%;
@@ -130,7 +130,7 @@ body {
     	height: 17em;
     }
     #gameGrid {
-    	margin-top: 12em;
+    	margin-top: 14em;
     }
 }
 
