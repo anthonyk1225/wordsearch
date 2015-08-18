@@ -41,6 +41,8 @@ module.exports = function(app) {
 		});
 	}); 
 
+
+	//Determines whether to let the user play or watch
 	app.get('/playerassignment', function(req, res) { // takes a player and enters them into the game
 		var gameid = req.query.gameid;
 		var username = req.query.username;
@@ -78,6 +80,8 @@ module.exports = function(app) {
 		});
 	});
 
+
+	// returns who the current player of the game is
 	app.get('/findcurrentplayer/', function(req, res) {
 		var gameid = req.query.gameid;
 		gamestate.find({'gamestate.gameid' : gameid}, function (err, docs) {
@@ -88,6 +92,8 @@ module.exports = function(app) {
 		});
 	});
 
+
+	//changes the current player and returns the next player
 	app.get('/changecurrentplayer/', function(req, res) {
 		var gameid = req.query.gameid;
 		var players = req.query.players;
@@ -105,6 +111,8 @@ module.exports = function(app) {
 		});
 	});
 
+
+	// returns the winner of the game
 	app.get('/winner', function(req, res) {
 		var gameid = req.query.gameid;
 		var players = req.query.players;
@@ -119,6 +127,9 @@ module.exports = function(app) {
 		});
 	});
 
+
+	//takes a player's guess and updates in gamestate if a valid answer. Returns answer boolean value
+	// and checks to see if game is over
 	app.get('/scores/', function(req, res) {
 		var gameid = req.query.gameid;
 		var player = req.query.player;
@@ -174,6 +185,8 @@ module.exports = function(app) {
 		});
 	});
 
+
+	//will return all of the found words of the game
 	app.get('/updateFoundWords', function(req, res) {
 		var gameid = req.query.gameid;
 		gamestate.find({'gamestate.gameid' : gameid}, function (err, docs) {
@@ -184,6 +197,8 @@ module.exports = function(app) {
 		});
 	});
 
+
+	//will return the current scores of the game
 	app.get('/updateScores', function(req,res) {
 		var gameid = req.query.gameid;
 		gamestate.find({'gamestate.gameid' : gameid}, function (err, docs) {
@@ -200,6 +215,8 @@ module.exports = function(app) {
 		});
 	});
 
+
+	// will return true or false, determining if game is over
 	app.get('/gameover', function(req, res) {
 		var gameid = req.query.gameid;
 		table.find({'encasing.gameid' : gameid}, function (err, docs) {

@@ -38,11 +38,11 @@ Board.prototype.createBoard = function(){
 };
 
 Board.prototype.parseThrough = function( callback ) {
-	var yo = this;
+	var newCLass = this;
 	var combos = [];
 	lineReader.eachLine('dictionary.txt', function(line) {
 		if (line.length > 3) {
-		var a = yo.findWords(line);
+		var a = newCLass.findWords(line);
 			if (a != undefined){
 				if (combos.indexOf(a) == -1){
 					combos.push(a.toLowerCase());
@@ -55,12 +55,12 @@ Board.prototype.parseThrough = function( callback ) {
 };
 
 Board.prototype.findWords = function(word) {
-	var yo = this;
-	for (var i = 0; i < yo.board.length; i ++) {
-		for (var j = 0; j < yo.board[i].length; j++) {
-			if (yo.board[i][j] == word[0].toUpperCase()) {
+	var newCLass = this;
+	for (var i = 0; i < newCLass.board.length; i ++) {
+		for (var j = 0; j < newCLass.board[i].length; j++) {
+			if (newCLass.board[i][j] == word[0].toUpperCase()) {
 				if (j + word.length <= 15){
-					if (yo.board[i].slice(j, (j + word.length)) == word.toUpperCase()) {
+					if (newCLass.board[i].slice(j, (j + word.length)) == word.toUpperCase()) {
 						return word;
 					};
 				};

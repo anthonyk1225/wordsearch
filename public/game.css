@@ -121,4 +121,15 @@ body {
     #gameArea {
         margin: 0 0 1em 1em;
     }
+    #chatBox {
+    	width: 100%;
+    	height: 20em;
+    	position: none;
+    }
+    #messages {
+    	height: 17em;
+    }
+    #gameGrid {
+    	margin-top: 12em;
+    }
 } 
